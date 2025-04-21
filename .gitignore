@@ -1,1 +1,10 @@
 .env
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.ipynb
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
