@@ -7,6 +7,20 @@ st.set_page_config(
     layout="centered"
 )
 
+# Sidebar
+st.sidebar.title("QuizGPT Kids Edition")
+difficulty = st.sidebar.selectbox(
+    "Select Difficulty",
+    ["Easy", "Medium", "Hard"],
+    index=0
+)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown(
+    "🔗 [GitHub Repo](https://github.com/dodoongtak/playingGpt)"
+)
+
+# Main area
 st.title("🎈 QuizGPT Kids Edition")
 st.write("Welcome! This playful quiz app for kids is under construction. 🚧")
 
