@@ -40,6 +40,7 @@ st.sidebar.markdown("""
 
 # Main area
 st.title("🎮 QuizGPT Kids Edition")
+st.write("🌟 Let's see how much you remember from the story! Good luck and have fun! 🌟")
 st.write("Welcome! Select a difficulty and answer the questions.")
 
 # Load quiz questions for the selected difficulty
@@ -103,6 +104,14 @@ if st.button("Submit Quiz", type="primary"):
                     del st.session_state[f"q{i}"]
             st.experimental_rerun()
 
+        if score == len(quiz_questions):
+            st.balloons()
+            st.markdown("🎉 **Amazing! You got all the questions right!** 🎉")
+        elif score >= len(quiz_questions) // 2:
+            st.markdown("👍 **Great job! Keep practicing to get them all right!**")
+        else:
+            st.markdown("🌱 **Don't worry! Try again and you'll get better!**")
+
 # Show correct answers if requested
 if st.session_state.show_answers:
     st.markdown("---")
@@ -114,3 +123,7 @@ if st.session_state.show_answers:
             st.error(f"❌ Question {i+1}: Your answer was incorrect. The correct answer was: {q['options'][q['answer_idx']]}")
 
 st.info("Stay tuned for fun quizzes and learning games! 👶🧠")
+
+st.progress(sum([a is not None for a in user_answers]) / len(quiz_questions))
+
+st.markdown("<hr style='border-top: 3px solid #ffcc00;'>", unsafe_allow_html=True)
