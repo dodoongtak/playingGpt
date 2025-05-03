@@ -8,6 +8,12 @@ st.set_page_config(
     layout="centered"
 )
 
+# Initialize session states
+if 'show_answers' not in st.session_state:
+    st.session_state.show_answers = False
+if 'quiz_submitted' not in st.session_state:
+    st.session_state.quiz_submitted = False
+
 # Sidebar
 st.sidebar.title("QuizGPT Kids Edition")
 difficulty = st.sidebar.selectbox(
@@ -18,7 +24,7 @@ difficulty = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    "🔗 [GitHub Repo](https://github.com/dodoongtak/playingGpt)"
+    "🔗 [QuizGPT Kids Edition - by @dodoongtak](https://github.com/dodoongtak/playingGpt)"
 )
 
 # Add book reference link
@@ -42,30 +48,69 @@ quiz_questions = generate_quiz(difficulty)
 # Display all questions
 user_answers = []
 for i, q in enumerate(quiz_questions):
-    st.write(f"**Question {i+1}:** {q['question']}")
-    user_answer = st.radio(
-        f"Select your answer for Question {i+1}:",
-        q["options"],
-        key=f"q{i}"
-    )
-    user_answers.append(user_answer)
+    # Create a container for each question
+    with st.container():
+        st.markdown("---")  # Add a separator
+        st.markdown(f"### Question {i+1}")  # Question number as a header
+        st.markdown(f"**{q['question']}**")  # Question text in bold
+        
+        # Add some padding
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Radio buttons for answers
+        user_answer = st.radio(
+            "Select your answer:",
+            q["options"],
+            key=f"q{i}",
+            index=None  # This ensures no option is pre-selected
+        )
+        user_answers.append(user_answer)
+        
+        # Add some padding at the bottom
+        st.markdown("<br>", unsafe_allow_html=True)
+
+# Add a separator before the submit button
+st.markdown("---")
 
 # Submit button
-if st.button("Submit Quiz"):
-    # Score the quiz
-    score = 0
+if st.button("Submit Quiz", type="primary"):
+    # Check if all questions are answered
+    if None in user_answers:
+        st.warning("Please answer all questions before submitting!")
+    else:
+        # Score the quiz
+        score = 0
+        for i, q in enumerate(quiz_questions):
+            if user_answers[i] == q["options"][q["answer_idx"]]:
+                score += 1
+
+        # Display total score
+        st.markdown("---")
+        st.markdown(f"### Your Score: {score} out of {len(quiz_questions)}")
+        
+        # Add a button to show correct answers
+        if st.button("Show Correct Answers"):
+            st.session_state.show_answers = True
+            
+        # Try Again button - only show after submission
+        if st.button("Try Again"):
+            # Clear all session states
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            # Clear all radio button selections
+            for i in range(len(quiz_questions)):
+                if f"q{i}" in st.session_state:
+                    del st.session_state[f"q{i}"]
+            st.experimental_rerun()
+
+# Show correct answers if requested
+if st.session_state.show_answers:
+    st.markdown("---")
+    st.markdown("### Review Your Answers")
     for i, q in enumerate(quiz_questions):
         if user_answers[i] == q["options"][q["answer_idx"]]:
-            score += 1
-            st.write(f"✅ Question {i+1}: Correct!")
+            st.success(f"✅ Question {i+1}: Your answer was correct!")
         else:
-            st.write(f"❌ Question {i+1}: Incorrect. The correct answer was: {q['options'][q['answer_idx']]}")
-
-    # Display total score
-    st.write(f"**Your Score: {score} out of {len(quiz_questions)}**")
-
-    # Optionally, add a "Try Again" button
-    if st.button("Try Again"):
-        st.experimental_rerun()
+            st.error(f"❌ Question {i+1}: Your answer was incorrect. The correct answer was: {q['options'][q['answer_idx']]}")
 
 st.info("Stay tuned for fun quizzes and learning games! 👶🧠")
