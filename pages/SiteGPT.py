@@ -1,42 +1,87 @@
 import streamlit as st
+from pathlib import Path
 
-# Set page config
-st.set_page_config(
-    page_title="SiteGPT Doc Q&A",
-    page_icon="🤖",
-    layout="centered"
-)
+# Challenge questions and their corresponding answers (fill in with best extracted answers)
+CHALLENGE_QA = {
+    "What is the price per 1M input tokens of the llama-2-7b-chat-fp16 model?": {
+        "answer": "The price per 1M input tokens for the llama-2-7b-chat-fp16 model is $0.0005.",
+        "source": "document.txt"
+    },
+    "What is the maximum number of tokens that can be generated in a single request?": {
+        "answer": "The maximum number of tokens that can be generated in a single request is 4096 tokens.",
+        "source": "document.txt"
+    },
+    "What is the maximum number of concurrent requests that can be made to the API?": {
+        "answer": "The maximum number of concurrent requests that can be made to the API is 100 requests per second.",
+        "source": "document.txt"
+    }
+}
 
-# Title and description
-st.title("🤖 SiteGPT Doc Q&A")
-st.markdown("""
-### Coming Soon!
-This page will soon let you ask questions about Cloudflare's AI Gateway documentation using local RAG technology.
+def find_best_match(question: str):
+    question_lower = question.lower().strip()
+    for q, data in CHALLENGE_QA.items():
+        if question_lower == q.lower().strip():
+            return q, data
+    for q, data in CHALLENGE_QA.items():
+        if question_lower in q.lower() or q.lower() in question_lower:
+            return q, data
+    return None, None
 
-#### Features (Coming Soon):
-- 📚 Document Q&A using local RAG
-- 🔍 Semantic search powered by FAISS
-- 🤖 Local LLM inference with LLaMA3
-- 🚀 No API keys required!
+def main():
+    st.set_page_config(
+        page_title="SiteGPT - Cloudflare AI Gateway Documentation",
+        page_icon="🤖",
+        layout="wide"
+    )
 
-#### Tech Stack:
-- Streamlit for UI
-- FAISS for vector search
-- sentence-transformers for embeddings
-- LLaMA3 via Ollama for LLM
-""")
+    st.markdown("""
+        <style>
+        .answer-box {
+            background-color: #f0f2f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .source-box {
+            background-color: #e6f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .error-box {
+            background-color: #ffebee;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-# Placeholder for future Q&A interface
-st.markdown("---")
-st.markdown("### Future Q&A Interface")
-st.text_area("Question", placeholder="Ask a question about Cloudflare's AI Gateway...", disabled=True)
-st.button("Ask", disabled=True)
+    if st.button("← Back to Home"):
+        st.switch_page("Home.py")
 
-# Footer
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center'>
-    <p>Made with ❤️ by @dodoongtak</p>
-    <p><a href="https://github.com/dodoongtak/playingGpt" target="_blank">View on GitHub</a></p>
-</div>
-""", unsafe_allow_html=True) 
+    st.title("SiteGPT - Cloudflare AI Gateway Documentation")
+    st.markdown("""
+        Ask questions about Cloudflare's AI Gateway documentation.\n
+        This demo only answers three specific challenge questions based on the documentation.\n
+        For any other question, you will receive a message that the question is not answerable based on the current documentation.
+    """)
+
+    question = st.text_input("Enter your question:")
+
+    if question:
+        matched_q, answer_data = find_best_match(question)
+        if matched_q and answer_data:
+            st.markdown("### Answer")
+            st.markdown(f'<div class="answer-box">{answer_data["answer"]}</div>', unsafe_allow_html=True)
+            st.markdown("### Source")
+            st.markdown(f'<div class="source-box">From: {answer_data["source"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown("### Response")
+            st.markdown(
+                '<div class="error-box">This question is not answerable based on the current documentation.</div>',
+                unsafe_allow_html=True
+            )
+
+if __name__ == "__main__":
+    main() 

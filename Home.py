@@ -34,7 +34,7 @@ st.markdown("""
 
 # Title
 st.markdown('<h1 class="app-title">🚀 Welcome to GPT Apps</h1>', unsafe_allow_html=True)
-st.markdown('<p class="app-description">Choose your experience from the sidebar</p>', unsafe_allow_html=True)
+st.markdown('<p class="app-description">Choose your experience below</p>', unsafe_allow_html=True)
 
 # Create two columns for the apps
 col1, col2 = st.columns(2)
@@ -47,7 +47,8 @@ with col1:
     - Perfect for young readers
     - Based on classic children's stories
     """)
-    st.markdown("👉 Use the sidebar to navigate to QuizGPT")
+    if st.button("Launch QuizGPT", key="quizgpt"):
+        st.switch_page("pages/QuizGPT.py")
 
 # SiteGPT Card
 with col2:
@@ -55,9 +56,10 @@ with col2:
     st.markdown("""
     - Ask questions about documentation
     - Powered by local RAG
-    - Coming soon!
+    - No API keys required
     """)
-    st.markdown("👉 Use the sidebar to navigate to SiteGPT")
+    if st.button("Launch SiteGPT", key="sitegpt"):
+        st.switch_page("pages/SiteGPT.py")
 
 # Footer
 st.markdown("---")
