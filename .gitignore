@@ -8,3 +8,6 @@ __pycache__/
 *.pyd
 *.pyw
 *.pyz
+
+## crawled_data
+document.txt
